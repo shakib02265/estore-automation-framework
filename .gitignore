@@ -1,0 +1,11 @@
+target/
+allure-report/
+screenshots/
+videos/
+csv/
+pdf/
+reports/
+.idea/
+.vscode/
+*.log
+*.class
