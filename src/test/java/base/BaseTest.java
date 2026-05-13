@@ -7,6 +7,8 @@ import java.nio.file.Paths;
 
 import java.time.Duration;
 
+import java.awt.GraphicsEnvironment;
+
 import org.openqa.selenium.WebDriver;
 
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -55,7 +57,7 @@ public class BaseTest {
 
 
 
-        // driver
+        // chromedriver
 
 
         WebDriverManager
@@ -72,6 +74,28 @@ public class BaseTest {
 
 
 
+
+        // GitHub Actions safe
+
+
+        options.addArguments(
+
+                "--headless=new",
+
+                "--no-sandbox",
+
+                "--disable-dev-shm-usage",
+
+                "--disable-gpu",
+
+                "--window-size=1920,1080",
+
+                "--remote-allow-origins=*"
+        );
+
+
+
+
         driver =
 
                 new ChromeDriver(
@@ -81,7 +105,8 @@ public class BaseTest {
 
 
 
-        // slower loading
+
+        // slower stable loading
 
 
         driver.manage()
@@ -114,19 +139,29 @@ public class BaseTest {
 
 
 
-        // video
+
+        // video only local
 
 
-        VideoUtil.startRecord(
+        if(
 
-                method.getName()
-        );
+                !GraphicsEnvironment
+
+                        .isHeadless()
+
+        ){
+
+            VideoUtil.startRecord(
+
+                    method.getName()
+            );
+        }
     }
 
 
 
 
-    // visual delay
+    // visual pause
 
 
     protected void waitForPage()
@@ -198,7 +233,7 @@ public class BaseTest {
 
         Thread.sleep(
 
-                2000
+                1000
         );
 
 
@@ -280,26 +315,37 @@ public class BaseTest {
 
 
 
-        // stop video
+        // video only local
 
 
-        VideoUtil.stopRecord();
+        if(
+
+                !GraphicsEnvironment
+
+                        .isHeadless()
+
+        ){
+
+            VideoUtil.stopRecord();
+        }
 
 
 
 
-        // allure step
+        // allure
 
 
         Allure.step(
 
-                "Executed : " + testName
+                "Executed : "
+
+                        + testName
         );
 
 
 
 
-        // screenshot attachment
+        // screenshot
 
 
         try {
@@ -326,26 +372,35 @@ public class BaseTest {
 
 
 
-        // video attachment
+        // video
 
 
         try {
 
 
-            Allure.addAttachment(
+            if(
 
-                    "Video",
+                    !GraphicsEnvironment
 
-                    Files.newInputStream(
+                            .isHeadless()
 
-                            Paths.get(
+            ){
 
-                                    "videos/"
-                                            + testName
-                                            + ".avi"
-                            )
-                    )
-            );
+                Allure.addAttachment(
+
+                        "Video",
+
+                        Files.newInputStream(
+
+                                Paths.get(
+
+                                        "videos/"
+                                                + testName
+                                                + ".avi"
+                                )
+                        )
+                );
+            }
 
 
         } catch(Exception e){}
@@ -353,7 +408,7 @@ public class BaseTest {
 
 
 
-        // pdf attachment
+        // pdf
 
 
         try {
